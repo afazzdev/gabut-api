@@ -7,7 +7,7 @@ const dbConfig = config.get('db');
 const parsed = parse(process.env.DATABASE_URL || '');
 const prod = process.env.NODE_ENV === 'production';
 
-const typeORMConfig: TypeOrmModuleOptions = {
+export const typeORMConfig: TypeOrmModuleOptions = {
   type: dbConfig.type,
   host: parsed.host || dbConfig.host,
   port: parseInt(parsed.port) || parseInt(dbConfig.port),
@@ -17,10 +17,13 @@ const typeORMConfig: TypeOrmModuleOptions = {
   entities: [join(__dirname + '/../../**/*.entity.{js,ts}')],
   migrations: [join(__dirname + '/../migration/*.ts')],
   cli: {
-    migrationsDir: join(__dirname + '../migration'),
+    migrationsDir: 'src/database/migration',
   },
   synchronize: !prod,
   ssl: prod,
 };
 
-export default typeORMConfig;
+// this "weird"  syntax is required for migration
+// should be able to use module.exports too (not yet tested)
+// export default typeORMConfig;
+module.exports = typeORMConfig;

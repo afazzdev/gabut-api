@@ -25,13 +25,11 @@ export class User extends BaseEntity {
   @Column({
     name: 'full_name',
     type: 'varchar',
-    nullable: false,
   })
   fullName: string;
 
   @Column({
     type: 'varchar',
-    nullable: false,
     unique: true,
   })
   email: string;
