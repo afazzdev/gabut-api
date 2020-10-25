@@ -42,6 +42,7 @@ export class User1603444241299 implements MigrationInterface {
           {
             name: 'address',
             type: 'varchar',
+            isNullable: true,
           },
           {
             name: 'role',
