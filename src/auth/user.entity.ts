@@ -50,7 +50,9 @@ export class User extends BaseEntity {
   })
   resetPasswordExpired: Date;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   address: string;
 
   @Column({

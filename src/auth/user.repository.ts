@@ -43,6 +43,6 @@ export class UserRepository extends Repository<User> {
   }
 
   private async hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, 12);
+    return await bcrypt.hash(password, 12);
   }
 }
