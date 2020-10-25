@@ -8,6 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "heroku-postbuild": "yarn typeorm:migration:run",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -20,9 +21,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm",
-    "typeorm:migration:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run --config src/database/config/typeorm.config.ts",
-    "typeorm:migration:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert --config src/database/config/typeorm.config.ts",
-    "typeorm:migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate --config src/database/config/typeorm.config.ts"
+    "typeorm:migration:run": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run --config typeorm.config.ts",
+    "typeorm:migration:revert": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert --config typeorm.config.ts",
+    "typeorm:migration:generate": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate --config typeorm.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^7.4.4",
@@ -35,6 +36,7 @@
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "config": "^3.3.2",
+    "morgan": "^1.10.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "pg": "^8.4.1",
