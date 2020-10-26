@@ -19,7 +19,6 @@ const typeORMConfig: TypeOrmModuleOptions = {
   cli: {
     migrationsDir: 'migration',
   },
-  synchronize: !prod,
   ssl: prod,
 };
 
