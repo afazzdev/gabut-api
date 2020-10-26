@@ -6,12 +6,15 @@ import {
 import * as bcrypt from 'bcrypt';
 
 import { User } from './user.entity';
-import { AuthCredentialsDTO } from './dto/auth-credentials.dto';
+import {
+  SignUpCredentialsDTO,
+  SignInCredentialsDTO,
+} from './dto/auth-credentials.dto';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  async signUp(authCredentialsDTO: AuthCredentialsDTO): Promise<void> {
-    const { fullName, email, password } = authCredentialsDTO;
+  async signUp(signUpCredentialsDTO: SignUpCredentialsDTO): Promise<User> {
+    const { fullName, email, password } = signUpCredentialsDTO;
 
     const user = new User();
     user.fullName = fullName;
@@ -20,9 +23,16 @@ export class UserRepository extends Repository<User> {
 
     try {
       await user.save();
+
+      // Delete unnecessary data for client
+      delete user.password;
+      delete user.resetPassword;
+      delete user.resetPasswordExpired;
+
+      return user;
     } catch (error) {
       if (error.code === '23505') {
-        throw new ConflictException('Username already exist!');
+        throw new ConflictException('Email sudah terdaftar!');
       } else {
         throw new InternalServerErrorException();
       }
@@ -30,13 +40,27 @@ export class UserRepository extends Repository<User> {
   }
 
   async validateUserPassword(
-    authCredentialsDTO: AuthCredentialsDTO,
-  ): Promise<User['id']> {
-    const { email, password } = authCredentialsDTO;
-    const user = await this.findOne({ email });
+    signInCredentialsDTO: SignInCredentialsDTO,
+  ): Promise<User> {
+    const { email, password } = signInCredentialsDTO;
+    const user = await this.findOne({
+      select: [
+        'id',
+        'email',
+        'password',
+        'fullName',
+        'role',
+        'address',
+        'createdAt',
+        'updatedAt',
+      ],
+      where: { email },
+    });
 
     if (user && (await user.validatePassword(password))) {
-      return user.id;
+      // Delete password from response
+      delete user.password;
+      return user;
     } else {
       return null;
     }

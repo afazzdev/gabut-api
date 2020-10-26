@@ -2,8 +2,13 @@ import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from './user.repository';
-import { AuthCredentialsDTO } from './dto/auth-credentials.dto';
+import {
+  SignUpCredentialsDTO,
+  SignInCredentialsDTO,
+} from './dto/auth-credentials.dto';
 import { JwtPayload } from './jwt-payload';
+import { ISignInResponseData } from './dto/signinResponse.dto';
+import { ISignUpResponseData } from './dto/signupResponse.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,27 +19,38 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signUp(authCredentialsDTO: AuthCredentialsDTO): Promise<void> {
-    return this.userRepository.signUp(authCredentialsDTO);
+  async signUp(
+    authCredentialsDTO: SignUpCredentialsDTO,
+  ): Promise<ISignUpResponseData> {
+    const newUser = await this.userRepository.signUp(authCredentialsDTO);
+
+    const token = this.signToken({ id: newUser.id });
+
+    return {
+      token,
+      user: newUser,
+    };
   }
 
   async signIn(
-    authCredentialsDTO: AuthCredentialsDTO,
-  ): Promise<{ accessToken: string }> {
-    const id = await this.userRepository.validateUserPassword(
-      authCredentialsDTO,
+    signInCredentialsDTO: SignInCredentialsDTO,
+  ): Promise<ISignInResponseData> {
+    const user = await this.userRepository.validateUserPassword(
+      signInCredentialsDTO,
     );
 
-    if (!id) {
+    if (!user?.id) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload: JwtPayload = { id };
-    const accessToken = this.jwtService.sign(payload);
-    this.logger.debug(
-      `Generate JWT token with payload ${JSON.stringify(payload)}`,
-    );
+    const token = this.signToken({ id: user.id });
 
-    return { accessToken };
+    this.logger.debug(`Generate JWT token with token ${JSON.stringify(token)}`);
+
+    return { token, user };
+  }
+
+  private signToken(payload: JwtPayload) {
+    return this.jwtService.sign(payload);
   }
 }
