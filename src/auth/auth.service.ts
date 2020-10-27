@@ -1,28 +1,32 @@
 import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from './user.repository';
+
+import { AuthRepository } from './auth.repository';
+
+import { JwtPayload } from './jwt-payload';
 import {
   SignUpCredentialsDTO,
   SignInCredentialsDTO,
 } from './dto/auth-credentials.dto';
-import { JwtPayload } from './jwt-payload';
-import { ISignInResponseData } from './dto/signinResponse.dto';
-import { ISignUpResponseData } from './dto/signupResponse.dto';
+import {
+  ISignInResponseData,
+  ISignUpResponseData,
+} from './dto/auth-responses.dto';
 
 @Injectable()
 export class AuthService {
   private logger = new Logger();
   constructor(
-    @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
+    @InjectRepository(AuthRepository)
+    private authRepository: AuthRepository,
     private jwtService: JwtService,
   ) {}
 
   async signUp(
     authCredentialsDTO: SignUpCredentialsDTO,
   ): Promise<ISignUpResponseData> {
-    const newUser = await this.userRepository.signUp(authCredentialsDTO);
+    const newUser = await this.authRepository.signUp(authCredentialsDTO);
 
     const token = this.signToken({ id: newUser.id });
 
@@ -35,7 +39,7 @@ export class AuthService {
   async signIn(
     signInCredentialsDTO: SignInCredentialsDTO,
   ): Promise<ISignInResponseData> {
-    const user = await this.userRepository.validateUserPassword(
+    const user = await this.authRepository.validateUserPassword(
       signInCredentialsDTO,
     );
 
@@ -45,7 +49,7 @@ export class AuthService {
 
     const token = this.signToken({ id: user.id });
 
-    this.logger.debug(`Generate JWT token with token ${JSON.stringify(token)}`);
+    // this.logger.debug(`Generate JWT token with token ${JSON.stringify(token)}`);
 
     return { token, user };
   }

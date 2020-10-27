@@ -6,13 +6,13 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+
 import { AuthService } from './auth.service';
 import {
   SignUpCredentialsDTO,
   SignInCredentialsDTO,
 } from './dto/auth-credentials.dto';
-import { ISignInResponse } from './dto/signinResponse.dto';
-import { ISignUpResponse } from './dto/signupResponse.dto';
+import { ISignInResponse, ISignUpResponse } from './dto/auth-responses.dto';
 import { Status } from 'src/utils/responseJson';
 
 @ApiTags('auth')
