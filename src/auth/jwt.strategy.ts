@@ -21,10 +21,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload): Promise<User> {
-    const { id } = payload;
+    const { id, iat } = payload;
     const user = await this.authRepository.findOne({ userId: id });
+    const currentiat = new Date(iat * 1000);
 
-    if (!user) {
+    if (!user || user.changedPasswordAt > currentiat) {
       throw new UnauthorizedException();
     }
 
