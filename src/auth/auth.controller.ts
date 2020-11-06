@@ -4,6 +4,8 @@ import {
   Body,
   ValidationPipe,
   HttpCode,
+  Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -14,6 +16,10 @@ import {
 } from './dto/auth-credentials.dto';
 import { ISignInResponse, ISignUpResponse } from './dto/auth-responses.dto';
 import { Status } from 'src/utils/responseJson';
+import { AuthGuard } from '@nestjs/passport';
+import { ChangePasswordDTO } from './dto/change-password.dto';
+import { GetUser } from './get-user.decorator';
+import { User } from 'src/user/user.entity';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -44,6 +50,24 @@ export class AuthController {
       status: Status.success,
       message: 'Login berhasil!',
       data,
+    };
+  }
+
+  @UseGuards(AuthGuard())
+  @Patch('change-password')
+  async changePassword(
+    @Body(ValidationPipe) changePasswordDto: ChangePasswordDTO,
+    @GetUser() user: User,
+  ) {
+    const { token } = await this.authService.changePassword(
+      user,
+      changePasswordDto,
+    );
+
+    return {
+      status: Status.success,
+      message: 'Password berhasil di ganti!',
+      token,
     };
   }
 }

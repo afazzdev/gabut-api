@@ -13,6 +13,8 @@ import {
   ISignInResponseData,
   ISignUpResponseData,
 } from './dto/auth-responses.dto';
+import { ChangePasswordDTO } from './dto/change-password.dto';
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -52,6 +54,14 @@ export class AuthService {
     // this.logger.debug(`Generate JWT token with token ${JSON.stringify(token)}`);
 
     return { token, user };
+  }
+
+  async changePassword(user: User, changePasswordDto: ChangePasswordDTO) {
+    await this.authRepository.changePassword(user.userId, changePasswordDto);
+
+    const token = this.signToken({ id: user.userId });
+
+    return { token };
   }
 
   private signToken(payload: JwtPayload) {
