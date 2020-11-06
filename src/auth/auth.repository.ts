@@ -26,7 +26,7 @@ export class AuthRepository extends Repository<User> {
 
       // Delete unnecessary data for client
       delete user.password;
-      delete user.resetPassword;
+      delete user.resetPasswordToken;
       delete user.resetPasswordExpired;
 
       return user;

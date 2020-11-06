@@ -37,10 +37,10 @@ export class User extends BaseEntity {
   password: string;
 
   @Column({
-    name: 'reset_password',
+    name: 'reset_password_token',
     nullable: true,
   })
-  resetPassword: string;
+  resetPasswordToken: string;
 
   @Column({
     name: 'reset_password_expired',
