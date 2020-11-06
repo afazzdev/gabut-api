@@ -3,24 +3,23 @@ import {
   PrimaryGeneratedColumn,
   Column,
   Entity,
-  // Unique,
-  // OneToMany,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Product } from 'src/product/product.entity';
+import { Invoice } from 'src/payment/invoice.entity';
 
 export enum UserRole {
   admin = 'admin',
   user = 'user',
 }
 
-@Entity({
-  name: 'users',
-})
+@Entity('users')
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn('uuid', { name: 'user_id' })
+  userId: string;
 
   @Column({
     name: 'full_name',
@@ -51,7 +50,8 @@ export class User extends BaseEntity {
   resetPasswordExpired: Date;
 
   @Column({
-    nullable: true
+    name: 'address',
+    nullable: true,
   })
   address: string;
 
@@ -62,6 +62,18 @@ export class User extends BaseEntity {
   })
   role: UserRole;
 
+  /**
+   * Relations
+   */
+  @OneToMany(() => Product, (products) => products.seller, { eager: false })
+  products: Product[];
+
+  @OneToMany(() => Invoice, (invoice) => invoice.userId, { eager: false })
+  invoices: Invoice[];
+
+  /**
+   * Defaults
+   */
   @CreateDateColumn({
     name: 'created_at',
   })
@@ -71,13 +83,6 @@ export class User extends BaseEntity {
     name: 'updated_at',
   })
   updatedAt: Date;
-
-  // @OneToMany(
-  //   type => Task,
-  //   tasks => tasks.user,
-  //   { eager: true },
-  // )
-  // tasks: Task[];
 
   async validatePassword(password: string): Promise<boolean> {
     const result = await bcrypt.compare(password, this.password);

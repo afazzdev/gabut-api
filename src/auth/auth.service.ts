@@ -28,7 +28,7 @@ export class AuthService {
   ): Promise<ISignUpResponseData> {
     const newUser = await this.authRepository.signUp(authCredentialsDTO);
 
-    const token = this.signToken({ id: newUser.id });
+    const token = this.signToken({ id: newUser.userId });
 
     return {
       token,
@@ -43,11 +43,11 @@ export class AuthService {
       signInCredentialsDTO,
     );
 
-    if (!user?.id) {
+    if (!user?.userId) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const token = this.signToken({ id: user.id });
+    const token = this.signToken({ id: user.userId });
 
     // this.logger.debug(`Generate JWT token with token ${JSON.stringify(token)}`);
 

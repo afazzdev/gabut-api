@@ -45,7 +45,7 @@ export class AuthRepository extends Repository<User> {
     const { email, password } = signInCredentialsDTO;
     const user = await this.findOne({
       select: [
-        'id',
+        'userId',
         'email',
         'password',
         'fullName',
