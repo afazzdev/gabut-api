@@ -65,6 +65,13 @@ export class User extends BaseEntity {
   })
   role: UserRole;
 
+  @Column({
+    name: 'changed_password_at',
+    type: 'timestamp with time zone',
+    nullable: true,
+  })
+  changedPasswordAt: Date;
+
   /**
    * Relations
    */
@@ -87,11 +94,13 @@ export class User extends BaseEntity {
    */
   @CreateDateColumn({
     name: 'created_at',
+    type: 'timestamp with time zone',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
     name: 'updated_at',
+    type: 'timestamp with time zone',
   })
   updatedAt: Date;
 
