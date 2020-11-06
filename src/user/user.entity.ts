@@ -6,10 +6,13 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Product } from 'src/product/product.entity';
 import { Invoice } from 'src/payment/invoice.entity';
+import { Cart } from 'src/cart/cart.entity';
 
 export enum UserRole {
   admin = 'admin',
@@ -65,10 +68,18 @@ export class User extends BaseEntity {
   /**
    * Relations
    */
-  @OneToMany(() => Product, (products) => products.seller, { eager: false })
+  @OneToOne(() => Cart, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'cart_id', referencedColumnName: 'cartId' })
+  cart: Cart;
+
+  @OneToMany(() => Product, (products) => products.seller, {
+    eager: false,
+  })
   products: Product[];
 
-  @OneToMany(() => Invoice, (invoice) => invoice.userId, { eager: false })
+  @OneToMany(() => Invoice, (invoice) => invoice.userId, {
+    eager: false,
+  })
   invoices: Invoice[];
 
   /**
